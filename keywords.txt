@@ -15,15 +15,14 @@ AD7173	KEYWORD1
 init	KEYWORD2
 reset	KEYWORD2
 sync	KEYWORD2
-checkId	KEYWORD2
 get_data	KEYWORD2
-set_data_mode	KEYWORD2
-setup_channel	KEYWORD2
-set_data_rate	KEYWORD2
-set_clock_mode	KEYWORD2
-set_coding_mode	KEYWORD2
-setup_ac_rejection	KEYWORD2
+is_valid_id	KEYWORD2
+set_setup_config	KEYWORD2
+set_filter_config	KEYWORD2
+set_channel_config	KEYWORD2
+set_adc_mode_config	KEYWORD2
 get_current_data_channel	KEYWORD2
+set_interface_mode_config	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
@@ -74,12 +73,12 @@ SPS_5	LITERAL1
 SPS_10	LITERAL1
 SPS_16	LITERAL1
 SPS_20	LITERAL1
-SPS_50	LITERAL1
-SPS_60	LITERAL1
+SPS_49	LITERAL1
+SPS_59	LITERAL1
 SPS_100	LITERAL1
 SPS_200	LITERAL1
 SPS_381	LITERAL1
-SPS_504	LITERAL1
+SPS_503	LITERAL1
 SPS_1007	LITERAL1
 SPS_2597	LITERAL1
 SPS_5208	LITERAL1

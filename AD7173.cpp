@@ -14,30 +14,6 @@ void AD7173Class::init() {
 	SPI.setDataMode(SPI_MODE3);
 }
 
-bool AD7173Class::checkId() {
-	byte id[2];
-	 /* read the ADC device ID */
-	this->read_register(ID_REG, id, 2);
-	/* check if the id matches 0x30DX, where X is don't care */
-	id[1] &= 0xF0;
-	bool valid_id = id[0] == 0x30 && id[1] == 0xD0;
-
-	/* when debug enabled */
-	if (DEBUG_ENABLED) {
-		if (valid_id) {
-			Serial.println("init: ADC device ID is valid :)");
-		} else {
-			Serial.print("init: ADC device ID is invalid :( [ ");
-			this->print_byte(id[0]);
-			this->print_byte(id[1]);
-			Serial.print(" ]");
-			Serial.println();
-		}
-	}
-	/* return validity of ADC device ID */
-	return valid_id;
-}
-
 void AD7173Class::reset() {
 	/* sending at least 64 high bits returns ADC to default state */
 	for (int i = 0; i < 8; i++) {
@@ -58,30 +34,19 @@ void AD7173Class::print_byte(byte value) {
 	Serial.print(format);
 }
 
-int AD7173Class::write_register(byte reg, byte *value, int write_len) {
-	/* when desired register is invalid */
-	if (reg < 0x00 || reg > 0x3F) {
-		/* when debug enabled */
-		if (DEBUG_ENABLED) {
-			Serial.print("write_register: register out of range [ ");
-			this->print_byte(reg);
-			Serial.println(" ]");
-		}
-		/* return error code */
-		return 1;
-	}
+int AD7173Class::set_register(register_t reg, byte *value, int value_len) {
 	/* send communication register id 0x00 */
 	SPI.transfer(0x00);
 	/* send write command to the desired register 0x00 - 0xFF */
 	SPI.transfer(0x00 | reg);
-	/* write the desired amount of bytes */
-	for (int i = 0; i < write_len; i++) {
+	/* send the desired amount of bytes */
+	for (int i = 0; i < value_len; i++) {
 		SPI.transfer(value[i]);
 	}
 	/* when debug enabled */
 	if (DEBUG_ENABLED) {
-		Serial.print("write_register: wrote [ ");
-		for (int i = 0; i < write_len; i++) {
+		Serial.print("set_register: set [ ");
+		for (int i = 0; i < value_len; i++) {
 			this->print_byte(value[i]);
 		}
 		Serial.print("] to reg [ ");
@@ -94,30 +59,19 @@ int AD7173Class::write_register(byte reg, byte *value, int write_len) {
 	return 0;
 }
 
-int AD7173Class::read_register(byte reg, byte *value, int read_len) {
-	/* when desired register is invalid */
-	if (reg < 0x00 || reg > 0x3F) {
-		/* when debug enabled */
-		if (DEBUG_ENABLED) {
-			Serial.print("read_register: register out of range [ ");
-			this->print_byte(reg);
-			Serial.println(" ]");
-		}
-		/* return error code */
-		return 1;
-	}
+int AD7173Class::get_register(register_t reg, byte *value, int value_len) {
 	/* send communication register id 0x00 */
 	SPI.transfer(0x00);
 	/* send read command to the desired register 0x00 - 0xFF */
 	SPI.transfer(0x40 | reg);
-	/* read the desired amount of bytes */
-	for (int i = 0; i < read_len; i++) {
+	/* receive the desired amount of bytes */
+	for (int i = 0; i < value_len; i++) {
 		value[i] = SPI.transfer(0x00);
 	}
 	/* when debug enabled */
 	if (DEBUG_ENABLED) {
-		Serial.print("read_register: read [ ");
-		for (int i = 0; i < read_len; i++) {
+		Serial.print("get_register: got [ ");
+		for (int i = 0; i < value_len; i++) {
 			this->print_byte(value[i]);
 		}
 		Serial.print("] from reg [ ");
@@ -130,215 +84,53 @@ int AD7173Class::read_register(byte reg, byte *value, int read_len) {
 	return 0;
 }
 
-int AD7173Class::setup_channel(byte channel, bool enable, byte ain1, byte ain2) {
-	/* when channel out of range */
-	if (channel < CH0 || channel > CH15) {
-		/* when debug enabled */
-		if (DEBUG_ENABLED) {
-			Serial.print("enable_channel: channel out of range [ ");
-			this->print_byte(channel);
-			Serial.println(" ]");
-		}
-		/* return error code */
-		return 1;
-	}
-	byte value[2];
-	/* read desired channel configuration */
-	this->read_register(channel, value, 2);
-	/* clear the enable bit */
-	value[0] &= ~(1 << 7);
-	/* enable or disable this channel */
-	value[0] |= (enable << 7);
-	/* define the default analog input */
-	byte ain = ((channel & 0x0F) << 1);
-	/* set to default state */
-	value[0] &= 0xFC;
-	value[1] = 0x00;
-
-	/* when analog input 1 was given */
-	if (ain1 != NULL) {
-		/* set first analog input */
-		value[0] |= (ain1 >> 3);
-		value[1] |= (ain1 << 5);
-		/* when unipolar coding */
-		if (this->m_adc_coding_mode == UNIPOLAR) {
-			/* set second analog input to same as first */
-			value[1] |= ain1;
-		/* when not unipolar coding and analog input 2 was given */
-		} else if (ain2 != NULL) {
-			/* set second analog input */
-			value[1] |= ain2;
-		}
-	/* when no analog inputs were given and in BIPOLAR mode */
-	} else if (this->m_adc_coding_mode == BIPOLAR) {
-		/* set automatic values for BIPOLAR mode */
-		value[0] |= (ain >> 3);
-		value[1] |= (ain << 5);
-		value[1] |= (ain + 1);
-	/* otherwise */
-	} else {
-		/* set automatic value for UNIPOLAR mode */
-		value[0] |= ((channel & 0x0F) >> 3);
-		value[1] |= ((channel & 0x0F) << 5);
-		value[1] |= (channel & 0x0F);
-	}
-
-	/* update desired channel configuration */
-	this->write_register(channel, value, 2);
+int AD7173Class::get_current_data_channel(register_t &channel) {
+	byte value[1];
+	/* read ADC status register */
+	this->get_register(STATUS_REG, value, 1);
+	/* assign to return channel register value */
+	channel = (register_t) (value[0] & 0x0F);
 	/* return error code */
 	return 0;
 }
 
-int AD7173Class::set_data_rate(byte filter, byte data_speed) {
-	/* when filter out of range */
-	if (filter < FILTER0 || filter > FILTER7) {
-		/* when debug enabled */
-		if (DEBUG_ENABLED) {
-			this->print_byte(filter);
-			Serial.println("set_filter_speed: filter out of range");
-		}
-		/* return error code */
-		return 1;
-	}
+int AD7173Class::set_adc_mode_config(data_mode_t data_mode, clock_mode_t clock_mode) {
+	/* prepare the configuration value */
+	/* REF_EN [15], RESERVED [14], SING_CYC [13], RESERVED [12:11], DELAY [10:8], RESERVED [7], MODE [6:4], CLOCKSEL [3:2], RESERED [1:0] */
 	byte value[2];
-	/* get the current register value */
-	this->read_register(filter, value, 2);
-	/* set the speed to default */
-	value[1] &= 0xE0;
-	/* set the desired speed */
-	value[1] |= data_speed;
-	/* write the new register value */
-	this->write_register(filter, value, 2);
+	value[0] = 0x00;
+	value[1] = (data_mode << 4) | (clock_mode << 2);
+
+	/* update the desired adc_mode configuration */
+	this->set_register(ADCMODE_REG, value, 2);
+
+	/* update the data mode */
+	this->m_data_mode = data_mode;
+
 	/* return error code */
 	return 0;
 }
 
-int AD7173Class::setup_ac_rejection(byte filter, bool enable, byte configuration) {
+int AD7173Class::set_interface_mode_config(bool continuous_read) {
+	/* prepare the configuration value */
+	/* RESERVED [15:13], ALT_SYNC [12], IOSTRENGTH [11], HIDE_DELAY [10], RESERVED [9], DOUT_RESET [8], CONTREAD [7], DATA_STAT [6], REG_CHECK [5], RESERVED [4], CRC_EN [3:2], RESERVED [1], WL16 [0] */
 	byte value[2];
-	/* get the current register value */
-	this->read_register(filter, value, 2);
-	/* clear the enable bit */
-	value[0] &= ~(1 << 3);
-	/* enable or disable the filter enhancement */
-	value[0] |= (enable << 3);
-	/* write the new register value */
-	this->write_register(filter, value, 2);
-}
+	value[0] = 0x00;
+	value[1] = (continuous_read << 7);
 
-int AD7173Class::set_coding_mode(byte setup, coding_mode_t coding_mode) {
-	/* when setup out of range */
-	if (setup < SETUP0 || setup > SETUP7) {
-		/* when debug enabled */
-		if (DEBUG_ENABLED) {
-			this->print_byte(setup);
-			Serial.println("set_setup_coding: setup out of range");
-		}
-		/* return error code */
-		return 1;
-	}
-	byte value[2];
-	/* get the current register value */
-	this->read_register(setup, value, 2);
-	/* set the coding mode to default */
-	value[0] &= 0x7F;
-	/* set the desired coding */
-	value[0] |= (coding_mode << 7);
-	/* write the new register value */
-	this->write_register(setup, value, 2);
-	/* set to new coding mode */
-	this->m_adc_coding_mode = coding_mode;
-	/* return error code */
-	return 0;
-}
+	/* update the desired interface_mode configuration */
+	this->set_register(IFMODE_REG, value, 2);
 
-int AD7173Class::set_clock_mode(clock_mode_t clock_mode) {
-	/* the register value */
-	byte adc_mode_value[2];
-	/* get current register value */
-	this->read_register(ADCMODE_REG, adc_mode_value, 2);
-	/* reset clock mode to default INTERNAL_CLOCK [3:2] bit to 00 */
-	adc_mode_value[1] &= 0xF3;
+	/* update the data mode */
+	this->m_data_mode = CONTINUOUS_READ_MODE;
 
-	/* change to desired clock mode */
-	switch (clock_mode) {
-		case INTERNAL_CLOCK:
-			/* already INTERNAL */
-			break;
-		case INTERNAL_CLOCK_OUTPUT:
-			adc_mode_value[1] |= 0x04;
-			break;
-		case EXTERNAL_CLOCK_INPUT:
-			adc_mode_value[1] |= 0x08;
-			break;
-		case EXTERNAL_CRYSTAL:
-			adc_mode_value[1] |= 0x0C;
-			break;
-		/* when clock mode out of range */
-		default:
-			/* when debug enabled */
-			if (DEBUG_ENABLED) {
-				Serial.print(clock_mode + " ");
-				Serial.println("set_data_mode: data mode out of range");
-			}
-			/* return error code */
-			return 1;
-	}
-
-	/* write the desired register value */
-	this->write_register(ADCMODE_REG, adc_mode_value, 2);
-	/* return error code */
-	return 0;
-}
-
-int AD7173Class::set_data_mode(data_mode_t data_mode) {
-	/* when data mode out of range */
-	if (data_mode < 0 || data_mode > 2) {
-		/* when debug enabled */
-		if (DEBUG_ENABLED) {
-			Serial.print(data_mode + " ");
-			Serial.println("set_data_mode: data mode out of range");
-		}
-		/* return error code */
-		return 1;
-	}
-	byte if_mode_value[2];
-	byte adc_mode_value[2];
-	/* get current register values */
-	this->read_register(IFMODE_REG, if_mode_value, 2);
-	this->read_register(ADCMODE_REG, adc_mode_value, 2);
-	/* set to default read mode */
-	adc_mode_value[1] &= 0x8F;
-
-	/* when continuous read mode, the data register can be read directly when DATA_READY */
-	if (data_mode == CONTINUOUS_READ_MODE) {
-		/* set the ADC to continuous read mode */
-		if_mode_value[1] |= 0x80;
-	/* when single conversion mode, the ADC conversion has to be triggered manually */
-	} else if (data_mode == SINGLE_CONVERSION_MODE) {
-		/* diable continuous read mode */
-		if_mode_value[1] &= 0xF7;
-		/* set the ADC to single conversion mode */
-		adc_mode_value[1] |= 0x10;
-	/* when continuous conversion mode, the communication register has to be notified for a ADC read */
-	} else if (data_mode == CONTINUOUS_CONVERSION_MODE) {
-		/* diable continuous read mode */
-		if_mode_value[1] &= 0xF7;
-	/* unknown data conversion mode */
-	} else {
-		/* return error code */
-		return 1;
-	}
-	this->m_adc_data_mode = data_mode;
-	/* write the desired register value */
-	this->write_register(ADCMODE_REG, adc_mode_value, 2);
-	this->write_register(IFMODE_REG, if_mode_value, 2);
 	/* return error code */
 	return 0;
 }
 
 int AD7173Class::get_data(byte *value) {
 	/* when not in continuous read mode, send the read command */
-	if (this->m_adc_data_mode != CONTINUOUS_READ_MODE) {
+	if (this->m_data_mode != CONTINUOUS_READ_MODE) {
 		/* send communication register id 0x00 */
 		SPI.transfer(0x00);
 		/* send read command 0x40 to the data register 0x04 */
@@ -361,12 +153,70 @@ int AD7173Class::get_data(byte *value) {
 	return 0;
 }
 
-int AD7173Class::get_current_data_channel(byte &channel) {
-	byte value[1];
-	/* read ADC status register */
-	this->read_register(STATUS_REG, value, 1);
-	/* assign to return channel register value */
-	channel = value[0] & 0x0F;
+bool AD7173Class::is_valid_id() {
+	byte id[2];
+	 /* read the ADC device ID */
+	this->get_register(ID_REG, id, 2);
+	/* check if the id matches 0x30DX, where X is don't care */
+	id[1] &= 0xF0;
+	bool valid_id = id[0] == 0x30 && id[1] == 0xD0;
+
+	/* when debug enabled */
+	if (DEBUG_ENABLED) {
+		if (valid_id) {
+			Serial.println("init: ADC device ID is valid :)");
+		} else {
+			Serial.print("init: ADC device ID is invalid :( [ ");
+			this->print_byte(id[0]);
+			this->print_byte(id[1]);
+			Serial.print(" ]");
+			Serial.println();
+		}
+	}
+	/* return validity of ADC device ID */
+	return valid_id;
+}
+
+int AD7173Class::set_channel_config(register_t channel, bool enable, register_t setup, analog_input_t ain_pos, analog_input_t ain_neg) {
+	/* prepare the configuration value */
+	/* CH_EN0 [15], SETUP_SEL0 [14:12], RESERVED [11:10], AINPOS0 [9:5], AINNEG0 [4:0] */
+	byte value[2];
+	value[0] = (enable << 7) | (setup << 4) | (ain_pos >> 3);
+	value[1] = (ain_pos << 5) | ain_neg;
+
+	/* update the desired channel configuration */
+	this->set_register(channel, value, 2);
+
+	/* return error code */
+	return 0;
+}
+
+int AD7173Class::set_setup_config(register_t setup, coding_mode_t coding_mode) {
+	/* prepare the configuration value */
+	byte value[2];
+	value[0] = (coding_mode << 4);
+	value[1] = 0x00;
+
+	/* update the desired setup configuration */
+	this->set_register(setup, value, 2);
+
+	/* update the coding mode */
+	this->m_coding_mode = coding_mode;
+
+	/* return error code */
+	return 0;
+}
+
+int AD7173Class::set_filter_config(register_t filter, bool ac_rejection, data_rate_t data_rate) {
+	/* prepare the configuration value */
+	byte value[2];
+	/* SINC3_MAP0 [15], RESERVED [14:12], ENHFILTEN0 [11], ENHFILT0 [10:8], RESERVED [7], ORDER0 [6:5], ORD0 [4:0] */
+	value[0] = (ac_rejection << 3);
+	value[1] = data_rate;
+
+	/* update the desired filter configuration */
+	this->set_register(filter, value, 2);
+
 	/* return error code */
 	return 0;
 }

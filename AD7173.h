@@ -51,129 +51,138 @@ AIN1/REF2+ --| 3.                                                   28. |-- AIN6
 #include "SPI.h"
 
 /* enable or disable debug */
-#define DEBUG_ENABLED 0
+#define DEBUG_ENABLED 1
 
 /* delay for reading and writing registers  */
 #define READ_WRITE_DELAY 1
 
-/* ADC channel registers */
-#define CH0 0x10
-#define CH1 0x11
-#define CH2 0x12
-#define CH3 0x13
-#define CH4 0x14
-#define CH5 0x15
-#define CH6 0x16
-#define CH7 0x17
-#define CH8 0x18
-#define CH9 0x19
-#define CH10 0x1A
-#define CH11 0x1B
-#define CH12 0x1C
-#define CH13 0x1D
-#define CH14 0x1E
-#define CH15 0x1F
+/* registers */
+typedef enum {
+	/* other ADC registers */
+	COMMS_REG = 0x00,
+	STATUS_REG = 0x00,
+	ADCMODE_REG = 0x01,
+	IFMODE_REG = 0x02,
+	REGCHECK_REG = 0x03,
+	DATA_REG = 0x04,
+	GPIOCON_REG = 0x06,
+	ID_REG = 0x07,
+	/* ADC channel registers */
+	CH0 = 0x10,
+	CH1 = 0x11,
+	CH2 = 0x12,
+	CH3 = 0x13,
+	CH4 = 0x14,
+	CH5 = 0x15,
+	CH6 = 0x16,
+	CH7 = 0x17,
+	CH8 = 0x18,
+	CH9 = 0x19,
+	CH10 = 0x1A,
+	CH11 = 0x1B,
+	CH12 = 0x1C,
+	CH13 = 0x1D,
+	CH14 = 0x1E,
+	CH15 = 0x1F,
+	/* ADC setup config register */
+	SETUP0 = 0x20,
+	SETUP1 = 0x21,
+	SETUP2 = 0x22,
+	SETUP3 = 0x23,
+	SETUP4 = 0x24,
+	SETUP5 = 0x25,
+	SETUP6 = 0x26,
+	SETUP7 = 0x27,
+	/* ADC filter config registers */
+	FILTER0 = 0x28,
+	FILTER1 = 0x29,
+	FILTER2 = 0x2A,
+	FILTER3 = 0x2B,
+	FILTER4 = 0x2C,
+	FILTER5 = 0x2D,
+	FILTER6 = 0x2E,
+	FILTER7 = 0x2F,
+	/* ADC offset registers */
+	OFFSET0 = 0x30,
+	OFFSET1 = 0x31,
+	OFFSET2 = 0x32,
+	OFFSET3 = 0x33,
+	OFFSET4 = 0x34,
+	OFFSET5 = 0x35,
+	OFFSET6 = 0x36,
+	OFFSET7 = 0x37,
+	/* ADC gain registers */
+	GAIN0 = 0x38,
+	GAIN1 = 0x39,
+	GAIN2 = 0x3A,
+	GAIN3 = 0x3B,
+	GAIN4 = 0x3C,
+	GAIN5 = 0x3D,
+	GAIN6 = 0x3E,
+	GAIN7 = 0x3F
+} register_t;
 
-/* ADC analog input registers */
-#define AIN0 0x00
-#define AIN1 0x01
-#define AIN2 0x02
-#define AIN3 0x03
-#define AIN4 0x04
-#define AIN5 0x05
-#define AIN6 0x06
-#define AIN7 0x07
-#define AIN8 0x08
-#define AIN9 0x09
-#define AIN10 0x0A
-#define AIN11 0x0B
-#define AIN12 0x0C
-#define AIN13 0x0D
-#define AIN14 0x0E
-#define AIN15 0x0F
-#define AIN16 0x10
+/* ADC analog inputs */
+typedef enum {
+	AIN0 = 0x00,
+	AIN1 = 0x01,
+	AIN2 = 0x02,
+	AIN3 = 0x03,
+	AIN4 = 0x04,
+	AIN5 = 0x05,
+	AIN6 = 0x06,
+	AIN7 = 0x07,
+	AIN8 = 0x08,
+	AIN9 = 0x09,
+	AIN10 = 0x0A,
+	AIN11 = 0x0B,
+	AIN12 = 0x0C,
+	AIN13 = 0x0D,
+	AIN14 = 0x0E,
+	AIN15 = 0x0F,
+	AIN16 = 0x10,
+	/* other ADC analog inputs */
+	TEMP_SENSOR_POS = 0x11,
+	TEMP_SENSOR_NEG = 0x12,
+	REF_POS = 0x15,
+	REF_NEG = 0x16
+} analog_input_t;
 
-/* ADC gain registers */
-#define GAIN0 0x38
-#define GAIN1 0x39
-#define GAIN2 0x3A
-#define GAIN3 0x3B
-#define GAIN4 0x3C
-#define GAIN5 0x3D
-#define GAIN6 0x3E
-#define GAIN7 0x3F
-
-/* ADC setup config register */
-#define SETUP0 0x20
-#define SETUP1 0x21
-#define SETUP2 0x22
-#define SETUP3 0x23
-#define SETUP4 0x24
-#define SETUP5 0x25
-#define SETUP6 0x26
-#define SETUP7 0x27
-
-/* ADC filter config registers */
-#define FILTER0 0x28
-#define FILTER1 0x29
-#define FILTER2 0x2A
-#define FILTER3 0x2B
-#define FILTER4 0x2C
-#define FILTER5 0x2D
-#define FILTER6 0x2E
-#define FILTER7 0x2F
-
-/* ADC offset registers */
-#define OFFSET0 0x30
-#define OFFSET1 0x31
-#define OFFSET2 0x32
-#define OFFSET3 0x33
-#define OFFSET4 0x34
-#define OFFSET5 0x35
-#define OFFSET6 0x36
-#define OFFSET7 0x37
-
-/* ADC filter speed values (samples per second) */
-#define SPS_1 0x16
-#define SPS_2 0x15
-#define SPS_5 0x14
-#define SPS_10 0x13
-#define SPS_16 0x12
-#define SPS_20 0x11
-#define SPS_50 0x10
-#define SPS_60 0x0F
-#define SPS_100 0x0E
-#define SPS_200 0x0D
-#define SPS_381 0x0C
-#define SPS_504 0x0B
-#define SPS_1007 0x0A
-#define SPS_2597 0x09
-#define SPS_5208 0x08
-#define SPS_10417 0x07
-#define SPS_15625 0x06
-#define SPS_31250 0x00
-
-/* other ADC registers */
-#define ID_REG 0x07
-#define DATA_REG 0x04
-#define COMMS_REG 0x00
-#define IFMODE_REG 0x02
-#define STATUS_REG 0x00
-#define ADCMODE_REG 0x01
-#define GPIOCON_REG 0x06
-#define REGCHECK_REG 0x03
-
-/* other ADC channel input registers */
-#define REF_POS 0x15
-#define REF_NEG 0x16
-#define TEMP_SENSOR_POS 0x11
-#define TEMP_SENSOR_NEG 0x12
+/* ADC filter data rates (samples per second) */
+/* some are are rounded down, the data rates are for sinc5 + sinc1 */
+typedef enum {
+	SPS_31250 = 0x00,
+	SPS_15625 = 0x06,
+	SPS_10417 = 0x07,
+	SPS_5208 = 0x08,
+	SPS_2597 = 0x09,
+	SPS_1007 = 0x0A,
+	SPS_503 = 0x0B,
+	SPS_381 = 0x0C,
+	SPS_200 = 0x0D,
+	SPS_100 = 0x0E,
+	SPS_59 = 0x0F,
+	SPS_49 = 0x10,
+	SPS_20 = 0x11,
+	SPS_16 = 0x12,
+	SPS_10 = 0x13,
+	SPS_5 = 0x14,
+	SPS_2 = 0x15,
+	SPS_1 = 0x16
+} data_rate_t;
 
 /* ADC setup coding modes */
-typedef enum {UNIPOLAR = 0, BIPOLAR = 1} coding_mode_t;
+typedef enum {
+	UNIPOLAR = 0x00,
+	BIPOLAR = 0x01
+} coding_mode_t;
 
 /* ADC data conversion modes */
-typedef enum {CONTINUOUS_READ_MODE, SINGLE_CONVERSION_MODE, CONTINUOUS_CONVERSION_MODE} data_mode_t;
+typedef enum {
+	CONTINUOUS_CONVERSION_MODE = 0x00,
+	SINGLE_CONVERSION_MODE = 0x01,
+	CONTINUOUS_READ_MODE
+} data_mode_t;
 
 /* clock mode */
 /*
@@ -182,7 +191,12 @@ typedef enum {CONTINUOUS_READ_MODE, SINGLE_CONVERSION_MODE, CONTINUOUS_CONVERSIO
 	10 External clock input on XTAL2/CLKIO pin
 	11 External crystal on XTAL1 and XTAL2/CLKIO pins
 */
-typedef enum {INTERNAL_CLOCK, INTERNAL_CLOCK_OUTPUT, EXTERNAL_CLOCK_INPUT, EXTERNAL_CRYSTAL} clock_mode_t;
+typedef enum {
+	INTERNAL_CLOCK = 0x00,
+	INTERNAL_CLOCK_OUTPUT = 0x01,
+	EXTERNAL_CLOCK_INPUT = 0x02,
+	EXTERNAL_CRYSTAL = 0x03
+} clock_mode_t;
 
 /* ADC data ready indicator */
 #define DATA_READY digitalRead(MISO) == LOW
@@ -196,7 +210,7 @@ public:
 	set default ADC data conversion mode
 	=====================================
 	*/
-	AD7173Class() : m_adc_data_mode(CONTINUOUS_CONVERSION_MODE), m_adc_coding_mode(BIPOLAR) {
+	AD7173Class() : m_data_mode(CONTINUOUS_CONVERSION_MODE), m_coding_mode(BIPOLAR) {
 		/* ... */
 	}
 
@@ -206,14 +220,6 @@ public:
 	============================================
 	*/
 	void init();
-
-	/*
-	============================================
-	checks the ID register of the ADC
-	@return bool - true if the ADC ID valid
-	============================================
-	*/
-	bool checkId();
 
 	/*
 	==================================================
@@ -230,65 +236,32 @@ public:
 	void reset();
 
 	/*
-	=====================================
-	sets up ADC channels
-	@param byte - channel register
-	@param bool - enable or disable
-	@param byte - optional analog input 1
-	@param byte - optional analog input 2
+	=============================================
+	gets the current conversion results channel
+	@param byte - current data channel
 	@return int - error code
-	=====================================
+	=============================================
 	*/
-	int setup_channel(byte, bool, byte = NULL, byte = NULL);
-
-	/*
-	==========================================
-	sets the ADC filters data conversion rate
-	@param byte - filter register
-	@param byte - speed of conversion
-	@return int - error code
-	==========================================
-	*/
-	int set_data_rate(byte, byte);
-
-	/*
-	==========================================
-	enables the ADC filters  enhancement
-	@param byte - filter register
-	@param bool - enable or disable
-	@param byte - configuration
-	@return int - error code
-	==========================================
-	*/
-	int setup_ac_rejection(byte, bool, byte = NULL);
-
-	/*
-	==================================
-	sets the ADC setups coding mode
-	@param byte - setup register
-	@param condig_mode_t - coding mode
-	@return int - error code
-	==================================
-	*/
-	int set_coding_mode(byte, coding_mode_t);
+	int get_current_data_channel(register_t &);
 
 	/*
 	================================
-	sets the ADC clock mode
+	sets the ADC mode configuration
+	@param data_mode_t - data mode
 	@param clock_mode_t - clock mode
 	@return int - error code
 	================================
 	*/
-	int set_clock_mode(clock_mode_t);
+	int set_adc_mode_config(data_mode_t, clock_mode_t);
 
 	/*
-	==============================
-	sets the ADC data mode
-	@param data_mode_t - data mode
+	==================================================
+	sets the ADC interface mode configuration
+	@param bool - ensable/disable continuous read mode
 	@return int - error code
-	==============================
+	==================================================
 	*/
-	int set_data_mode(data_mode_t);
+	int set_interface_mode_config(bool);
 
 	/*
 	==========================================
@@ -299,20 +272,54 @@ public:
 	int get_data(byte *);
 
 	/*
-	=============================================
-	gets the current conversion results channel
-	@param byte - current data channel
-	@return int - error code
-	=============================================
+	============================================
+	checks the ID register of the ADC
+	@return bool - true if the ADC ID valid
+	============================================
 	*/
-	int get_current_data_channel(byte &);
+	bool is_valid_id();
+
+	/*
+	=====================================
+	configures ADC channels
+	@param byte - channel register
+	@param bool - enable/disable channel
+	@param byte - setup register
+	@param byte - analog input positive
+	@param byte - analog input negative
+	@return int - error code
+	=====================================
+	*/
+	int set_channel_config(register_t, bool, register_t, analog_input_t, analog_input_t);
+
+	/*
+	==================================
+	sets the ADC setups coding mode
+	@param byte - setup register
+	@param condig_mode_t - coding mode
+	@return int - error code
+	==================================
+	*/
+	int set_setup_config(register_t, coding_mode_t);
+
+	/*
+	==========================================
+	sets the ADC filters data conversion rate
+	@param byte - filter register
+	@param bool - enable/disable ac_rejection
+	@param byte - data rate
+	@return int - error code
+	==========================================
+	*/
+	int set_filter_config(register_t, bool, data_rate_t);
+
 
 private:
 	/* ADC data mode */
-	data_mode_t m_adc_data_mode;
+	data_mode_t m_data_mode;
 
 	/* ADC setup coding mode */
-	coding_mode_t m_adc_coding_mode;
+	coding_mode_t m_coding_mode;
 
 	/*
 	===========================
@@ -323,24 +330,24 @@ private:
 	void print_byte(byte);
 
 	/*
-	=========================================
-	writes to a desired ADC register
-	@param byte - the register where to write
-	@param  byte[] - the bytes to write
-	@param int - the length of bytes to write
-	=========================================
+	=======================================
+	set a desired ADC register value
+	@param byte - the register to set
+	@param  byte[] - the bytes to set
+	@param int - the length of bytes to set
+	=======================================
 	*/
-	int write_register(byte, byte *, int);
+	int set_register(register_t, byte *, int);
 
 	/*
-	=============================================
-	reads from a desired ADC register
-	@param byte - the register to read
-	@param int - the length of bytes to read
-	@return byte[] - the ADC register read result
-	=============================================
+	=======================================
+	get a desired ADC register value
+	@param byte - the register to get
+	@param int - the length of bytes to get
+	@return byte[] - the ADC register value
+	=======================================
 	*/
-	int read_register(byte, byte *, int);
+	int get_register(register_t, byte *, int);
 };
 
 extern AD7173Class AD7173;
