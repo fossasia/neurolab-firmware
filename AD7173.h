@@ -51,7 +51,7 @@ AIN1/REF2+ --| 3.                                                   28. |-- AIN6
 #include "SPI.h"
 
 /* enable or disable debug */
-#define DEBUG_ENABLED 1
+#define DEBUG_ENABLED 0
 
 /* delay for reading and writing registers  */
 #define READ_WRITE_DELAY 1
