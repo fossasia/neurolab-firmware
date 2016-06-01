@@ -210,7 +210,7 @@ public:
 	set default ADC data conversion mode
 	=====================================
 	*/
-	AD7173Class() : m_data_mode(CONTINUOUS_CONVERSION_MODE), m_coding_mode(BIPOLAR) {
+	AD7173Class() : m_data_mode(CONTINUOUS_CONVERSION_MODE) {
 		/* ... */
 	}
 
@@ -247,12 +247,11 @@ public:
 	/*
 	================================
 	sets the ADC mode configuration
-	@param data_mode_t - data mode
 	@param clock_mode_t - clock mode
 	@return int - error code
 	================================
 	*/
-	int set_adc_mode_config(data_mode_t, clock_mode_t);
+	int set_adc_mode_config(clock_mode_t);
 
 	/*
 	==================================================
@@ -313,13 +312,9 @@ public:
 	*/
 	int set_filter_config(register_t, bool, data_rate_t);
 
-
 private:
 	/* ADC data mode */
 	data_mode_t m_data_mode;
-
-	/* ADC setup coding mode */
-	coding_mode_t m_coding_mode;
 
 	/*
 	===========================

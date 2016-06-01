@@ -85,8 +85,10 @@ int AD7173Class::get_register(register_t reg, byte *value, int value_len) {
 }
 
 int AD7173Class::get_current_data_channel(register_t &channel) {
+	/* Address: 0x00, Reset: 0x80, Name: STATUS */
+
+	/* get ADC status register */
 	byte value[1];
-	/* read ADC status register */
 	this->get_register(STATUS_REG, value, 1);
 	/* assign to return channel register value */
 	channel = (register_t) (value[0] & 0x0F);
@@ -94,41 +96,51 @@ int AD7173Class::get_current_data_channel(register_t &channel) {
 	return 0;
 }
 
-int AD7173Class::set_adc_mode_config(data_mode_t data_mode, clock_mode_t clock_mode) {
+int AD7173Class::set_adc_mode_config(clock_mode_t clock_mode) {
+	/* Address: 0x01, Reset: 0x2000, Name: ADCMODE */
+
 	/* prepare the configuration value */
 	/* REF_EN [15], RESERVED [14], SING_CYC [13], RESERVED [12:11], DELAY [10:8], RESERVED [7], MODE [6:4], CLOCKSEL [3:2], RESERED [1:0] */
-	byte value[2];
-	value[0] = 0x00;
-	value[1] = (data_mode << 4) | (clock_mode << 2);
+	byte value[2] = {0x00, 0x00};
+	value[1] = (clock_mode << 2);
 
 	/* update the desired adc_mode configuration */
 	this->set_register(ADCMODE_REG, value, 2);
 
-	/* update the data mode */
-	this->m_data_mode = data_mode;
+	/* verify updated adc_mode configuration */
+	this->get_register(ADCMODE_REG, value, 2);
 
 	/* return error code */
 	return 0;
 }
 
 int AD7173Class::set_interface_mode_config(bool continuous_read) {
+	/* Address: 0x02, Reset: 0x0000, Name: IFMODE */
+
 	/* prepare the configuration value */
 	/* RESERVED [15:13], ALT_SYNC [12], IOSTRENGTH [11], HIDE_DELAY [10], RESERVED [9], DOUT_RESET [8], CONTREAD [7], DATA_STAT [6], REG_CHECK [5], RESERVED [4], CRC_EN [3:2], RESERVED [1], WL16 [0] */
-	byte value[2];
-	value[0] = 0x00;
+	byte value[2] = {0x00, 0x00};
 	value[1] = (continuous_read << 7);
 
 	/* update the desired interface_mode configuration */
 	this->set_register(IFMODE_REG, value, 2);
 
-	/* update the data mode */
-	this->m_data_mode = CONTINUOUS_READ_MODE;
+	/* verify updated interface_mode configuration */
+	this->get_register(IFMODE_REG, value, 2);
+
+	/* when continuous read mode */
+	if (continuous_read) {
+		/* update the data mode */
+		this->m_data_mode = CONTINUOUS_READ_MODE;
+	}
 
 	/* return error code */
 	return 0;
 }
 
 int AD7173Class::get_data(byte *value) {
+	/* Address: 0x04, Reset: 0x000000, Name: DATA */
+
 	/* when not in continuous read mode, send the read command */
 	if (this->m_data_mode != CONTINUOUS_READ_MODE) {
 		/* send communication register id 0x00 */
@@ -154,8 +166,10 @@ int AD7173Class::get_data(byte *value) {
 }
 
 bool AD7173Class::is_valid_id() {
+	/* Address: 0x07, Reset: 0x30DX, Name: ID */
+
+	/* get the ADC device ID */
 	byte id[2];
-	 /* read the ADC device ID */
 	this->get_register(ID_REG, id, 2);
 	/* check if the id matches 0x30DX, where X is don't care */
 	id[1] &= 0xF0;
@@ -178,44 +192,57 @@ bool AD7173Class::is_valid_id() {
 }
 
 int AD7173Class::set_channel_config(register_t channel, bool enable, register_t setup, analog_input_t ain_pos, analog_input_t ain_neg) {
+	/* Address: 0x10, Reset: 0x8001, Name: CH0 */
+	/* Address Range: 0x11 to 0x1F, Reset: 0x0001, Name: CH1 to CH15 */
+
 	/* prepare the configuration value */
 	/* CH_EN0 [15], SETUP_SEL0 [14:12], RESERVED [11:10], AINPOS0 [9:5], AINNEG0 [4:0] */
-	byte value[2];
+	byte value[2] = {0x00, 0x00};
 	value[0] = (enable << 7) | (setup << 4) | (ain_pos >> 3);
 	value[1] = (ain_pos << 5) | ain_neg;
 
 	/* update the desired channel configuration */
 	this->set_register(channel, value, 2);
 
+	/* verify the updated channel configuration */
+	this->get_register(channel, value, 2);
+
 	/* return error code */
 	return 0;
 }
 
 int AD7173Class::set_setup_config(register_t setup, coding_mode_t coding_mode) {
+	/* Address Range: 0x20 to 0x27, Reset: 0x1000, Name: SETUPCON0 to SETUPCON7 */
+
 	/* prepare the configuration value */
-	byte value[2];
+	byte value[2] = {0x00, 0x00};
 	value[0] = (coding_mode << 4);
 	value[1] = 0x00;
 
 	/* update the desired setup configuration */
 	this->set_register(setup, value, 2);
 
-	/* update the coding mode */
-	this->m_coding_mode = coding_mode;
+	/* verify the updated setup configuration */
+	this->get_register(setup, value, 2);
 
 	/* return error code */
 	return 0;
 }
 
 int AD7173Class::set_filter_config(register_t filter, bool ac_rejection, data_rate_t data_rate) {
+	/* Address Range: 0x28 to 0x2F, Reset: 0x0000, Name: FILTCON0 to FILTCON7 */
+
 	/* prepare the configuration value */
-	byte value[2];
+	byte value[2] = {0x00, 0x00};
 	/* SINC3_MAP0 [15], RESERVED [14:12], ENHFILTEN0 [11], ENHFILT0 [10:8], RESERVED [7], ORDER0 [6:5], ORD0 [4:0] */
 	value[0] = (ac_rejection << 3);
 	value[1] = data_rate;
 
 	/* update the desired filter configuration */
 	this->set_register(filter, value, 2);
+
+	/* verify updated filter configuration */
+	this->get_register(filter, value, 2);
 
 	/* return error code */
 	return 0;

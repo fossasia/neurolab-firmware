@@ -26,15 +26,6 @@ void setup() {
 	if (AD7173.is_valid_id()) Serial.println("AD7173 ID is valid");
 	else Serial.println("AD7173 ID is invalid");
 
-	/* set the ADC data and clock mode */
-	/* CONTINUOUS_CONVERSION_MODE, SINGLE_CONVERSION_MODE */
-	/* INTERNAL_CLOCK, INTERNAL_CLOCK_OUTPUT, EXTERNAL_CLOCK_INPUT, EXTERNAL_CRYSTAL */
-	AD7173.set_adc_mode_config(CONTINUOUS_CONVERSION_MODE, INTERNAL_CLOCK);
-
-	/* enable the ADC CONTINUOUS_READ_MODE */
-	/* true/false to enamble/disable CONTINUOUS_READ_MODE */
-	AD7173.set_interface_mode_config(true);
-
 	/* set ADC input channel configuration */
 	/* enable channel 0 and channel 1 and connect each to 2 analog inputs for bipolar input */
 	/* CH0 - CH15 */
@@ -55,6 +46,10 @@ void setup() {
 	/* SPS_1, SPS_2, SPS_5, SPS_10, SPS_16, SPS_20, SPS_49, SPS_59, SPS_100, SPS_200 */
 	/* SPS_381, SPS_503, SPS_1007, SPS_2597, SPS_5208, SPS_10417, SPS_15625, SPS_31250 */
 	AD7173.set_filter_config(FILTER0, false, SPS_1007);
+
+	/* set the ADC data and clock mode */
+	/* INTERNAL_CLOCK, INTERNAL_CLOCK_OUTPUT, EXTERNAL_CLOCK_INPUT, EXTERNAL_CRYSTAL */
+	AD7173.set_adc_mode_config(INTERNAL_CLOCK);
 
 	/* wait for ADC */
 	delay(10);
