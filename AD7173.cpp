@@ -12,6 +12,8 @@ void AD7173Class::init() {
 	SPI.begin();
 	/* use SPI mode 3 */
 	SPI.setDataMode(SPI_MODE3);
+	/* allow the LDOs to power up */
+	delay(10);
 }
 
 void AD7173Class::reset() {
@@ -19,6 +21,8 @@ void AD7173Class::reset() {
 	for (int i = 0; i < 8; i++) {
 		SPI.transfer(0xFF);
 	}
+	/* allow the LDOs to power up */
+	delay(10);
 }
 
 void AD7173Class::sync() {
@@ -26,6 +30,8 @@ void AD7173Class::sync() {
 	digitalWrite(SS, HIGH);
 	delay(10);
 	digitalWrite(SS, LOW);
+	/* allow the LDOs to power up */
+	delay(10);
 }
 
 void AD7173Class::print_byte(byte value) {
@@ -96,13 +102,13 @@ int AD7173Class::get_current_data_channel(register_t &channel) {
 	return 0;
 }
 
-int AD7173Class::set_adc_mode_config(clock_mode_t clock_mode) {
+int AD7173Class::set_adc_mode_config(data_mode_t data_mode, clock_mode_t clock_mode) {
 	/* Address: 0x01, Reset: 0x2000, Name: ADCMODE */
 
 	/* prepare the configuration value */
 	/* REF_EN [15], RESERVED [14], SING_CYC [13], RESERVED [12:11], DELAY [10:8], RESERVED [7], MODE [6:4], CLOCKSEL [3:2], RESERED [1:0] */
 	byte value[2] = {0x00, 0x00};
-	value[1] = (clock_mode << 2);
+	value[1] = (data_mode << 4) | (clock_mode << 2);
 
 	/* update the desired adc_mode configuration */
 	this->set_register(ADCMODE_REG, value, 2);
@@ -229,13 +235,12 @@ int AD7173Class::set_setup_config(register_t setup, coding_mode_t coding_mode) {
 	return 0;
 }
 
-int AD7173Class::set_filter_config(register_t filter, bool ac_rejection, data_rate_t data_rate) {
+int AD7173Class::set_filter_config(register_t filter, data_rate_t data_rate) {
 	/* Address Range: 0x28 to 0x2F, Reset: 0x0000, Name: FILTCON0 to FILTCON7 */
 
 	/* prepare the configuration value */
 	byte value[2] = {0x00, 0x00};
 	/* SINC3_MAP0 [15], RESERVED [14:12], ENHFILTEN0 [11], ENHFILT0 [10:8], RESERVED [7], ORDER0 [6:5], ORD0 [4:0] */
-	value[0] = (ac_rejection << 3);
 	value[1] = data_rate;
 
 	/* update the desired filter configuration */

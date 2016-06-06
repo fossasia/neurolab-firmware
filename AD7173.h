@@ -251,7 +251,7 @@ public:
 	@return int - error code
 	================================
 	*/
-	int set_adc_mode_config(clock_mode_t);
+	int set_adc_mode_config(data_mode_t, clock_mode_t);
 
 	/*
 	==================================================
@@ -305,12 +305,11 @@ public:
 	==========================================
 	sets the ADC filters data conversion rate
 	@param byte - filter register
-	@param bool - enable/disable ac_rejection
 	@param byte - data rate
 	@return int - error code
 	==========================================
 	*/
-	int set_filter_config(register_t, bool, data_rate_t);
+	int set_filter_config(register_t, data_rate_t);
 
 private:
 	/* ADC data mode */

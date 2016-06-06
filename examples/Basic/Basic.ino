@@ -42,14 +42,20 @@ void setup() {
 
 	/* set the ADC FILTER0 ac_rejection to false and samplingrate to 1007 Hz */
 	/* FILTER0 - FILTER7 */
-	/* true/false to enable/disable 50/60 Hz AC rejection filters */
 	/* SPS_1, SPS_2, SPS_5, SPS_10, SPS_16, SPS_20, SPS_49, SPS_59, SPS_100, SPS_200 */
 	/* SPS_381, SPS_503, SPS_1007, SPS_2597, SPS_5208, SPS_10417, SPS_15625, SPS_31250 */
-	AD7173.set_filter_config(FILTER0, false, SPS_1007);
+	AD7173.set_filter_config(FILTER0, SPS_1007);
 
 	/* set the ADC data and clock mode */
+	/* CONTINUOUS_CONVERSION_MODE, SINGLE_CONVERSION_MODE */
+	/* in SINGLE_CONVERSION_MODE after all setup channels are sampled the ADC goes into STANDBY_MODE */
+	/* to exit STANDBY_MODE use this same function to go into CONTINUOUS or SINGLE_CONVERSION_MODE */
 	/* INTERNAL_CLOCK, INTERNAL_CLOCK_OUTPUT, EXTERNAL_CLOCK_INPUT, EXTERNAL_CRYSTAL */
-	AD7173.set_adc_mode_config(INTERNAL_CLOCK);
+	AD7173.set_adc_mode_config(CONTINUOUS_CONVERSION_MODE, INTERNAL_CLOCK);
+
+	/* enable or disable CONTINUOUS_READ_MODE, to exit use AD7173.reset(); */
+	/* AD7173.reset(); return all registers to default state, so everything has to be setup again */
+	AD7173.set_interface_mode_config(false);
 
 	/* wait for ADC */
 	delay(10);
