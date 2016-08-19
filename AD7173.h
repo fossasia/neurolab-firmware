@@ -311,6 +311,16 @@ public:
 	*/
 	int set_filter_config(register_t, data_rate_t);
 
+	/*
+	======================================
+	sets the ADC offset compensation value
+	@param byte - offset register
+	@param uint32_t - offset value
+	@return int - error code
+	======================================
+	*/
+	int set_offset_config(register_t, uint32_t);
+
 private:
 	/* ADC data mode */
 	data_mode_t m_data_mode;

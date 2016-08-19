@@ -19,9 +19,6 @@ void setup() {
 	/* reset the ADC registers to default */
 	AD7173.reset();
 
-	/* resync the ADC */
-	AD7173.sync();
-
 	/* check if the ID register of the ADC is valid */
 	if (AD7173.is_valid_id()) Serial.println("AD7173 ID is valid");
 	else Serial.println("AD7173 ID is invalid");
@@ -39,6 +36,10 @@ void setup() {
 	/* SETUP0 - SETUP7 */
 	/* BIPOLAR, UNIPOLAR */
 	AD7173.set_setup_config(SETUP0, BIPOLAR);
+
+	/* set ADC OFFSET0 offset value */
+	/* OFFSET0 - OFFSET7 */
+	AD7173.set_offset_config(OFFSET0, 8388608);
 
 	/* set the ADC FILTER0 ac_rejection to false and samplingrate to 1007 Hz */
 	/* FILTER0 - FILTER7 */

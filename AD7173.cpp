@@ -96,8 +96,10 @@ int AD7173Class::get_current_data_channel(register_t &channel) {
 	/* get ADC status register */
 	byte value[1];
 	this->get_register(STATUS_REG, value, 1);
+
 	/* assign to return channel register value */
 	channel = (register_t) (value[0] & 0x0F);
+
 	/* return error code */
 	return 0;
 }
@@ -110,10 +112,10 @@ int AD7173Class::set_adc_mode_config(data_mode_t data_mode, clock_mode_t clock_m
 	byte value[2] = {0x00, 0x00};
 	value[1] = (data_mode << 4) | (clock_mode << 2);
 
-	/* update the desired adc_mode configuration */
+	/* update the configuration value */
 	this->set_register(ADCMODE_REG, value, 2);
 
-	/* verify updated adc_mode configuration */
+	/* verify the updated configuration value */
 	this->get_register(ADCMODE_REG, value, 2);
 
 	/* return error code */
@@ -128,10 +130,10 @@ int AD7173Class::set_interface_mode_config(bool continuous_read) {
 	byte value[2] = {0x00, 0x00};
 	value[1] = (continuous_read << 7);
 
-	/* update the desired interface_mode configuration */
+	/* update the configuration value */
 	this->set_register(IFMODE_REG, value, 2);
 
-	/* verify updated interface_mode configuration */
+	/* verify the updated configuration value */
 	this->get_register(IFMODE_REG, value, 2);
 
 	/* when continuous read mode */
@@ -207,10 +209,10 @@ int AD7173Class::set_channel_config(register_t channel, bool enable, register_t 
 	value[0] = (enable << 7) | (setup << 4) | (ain_pos >> 3);
 	value[1] = (ain_pos << 5) | ain_neg;
 
-	/* update the desired channel configuration */
+	/* update the configuration value */
 	this->set_register(channel, value, 2);
 
-	/* verify the updated channel configuration */
+	/* verify the updated configuration value */
 	this->get_register(channel, value, 2);
 
 	/* return error code */
@@ -225,10 +227,10 @@ int AD7173Class::set_setup_config(register_t setup, coding_mode_t coding_mode) {
 	value[0] = (coding_mode << 4);
 	value[1] = 0x00;
 
-	/* update the desired setup configuration */
+	/* update the configuration value */
 	this->set_register(setup, value, 2);
 
-	/* verify the updated setup configuration */
+	/* verify the updated configuration value */
 	this->get_register(setup, value, 2);
 
 	/* return error code */
@@ -243,11 +245,30 @@ int AD7173Class::set_filter_config(register_t filter, data_rate_t data_rate) {
 	/* SINC3_MAP0 [15], RESERVED [14:12], ENHFILTEN0 [11], ENHFILT0 [10:8], RESERVED [7], ORDER0 [6:5], ORD0 [4:0] */
 	value[1] = data_rate;
 
-	/* update the desired filter configuration */
+	/* update the configuration value */
 	this->set_register(filter, value, 2);
 
-	/* verify updated filter configuration */
+	/* verify the updated configuration value */
 	this->get_register(filter, value, 2);
+
+	/* return error code */
+	return 0;
+}
+
+int AD7173Class::set_offset_config(register_t offset, uint32_t offset_value) {
+	/* Address Range: 0x30 to 0x37, Reset: 0x0000, Name: OFFSET0 to OFFSET7 */
+
+	/* prepare the configuration value */
+	byte value[3] = {0x00, 0x00, 0x00};
+	value[0] = offset_value;
+	value[1] = offset_value >> 8;
+	value[2] = offset_value >> 16;
+
+	/* update the configuration value */
+	this->set_register(offset, value, 3);
+
+	/* verify the updated configuration value */
+	this->get_register(offset, value, 3);
 
 	/* return error code */
 	return 0;
