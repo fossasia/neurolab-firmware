@@ -258,11 +258,13 @@ int AD7173Class::set_filter_config(register_t filter, data_rate_t data_rate) {
 int AD7173Class::set_offset_config(register_t offset, uint32_t offset_value) {
 	/* Address Range: 0x30 to 0x37, Reset: 0x0000, Name: OFFSET0 to OFFSET7 */
 
+	/* add the default offset value */
+	offset_value += 8388608;
 	/* prepare the configuration value */
 	byte value[3] = {0x00, 0x00, 0x00};
-	value[0] = offset_value;
+	value[0] = offset_value >> 16;
 	value[1] = offset_value >> 8;
-	value[2] = offset_value >> 16;
+	value[2] = offset_value;
 
 	/* update the configuration value */
 	this->set_register(offset, value, 3);

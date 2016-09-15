@@ -39,7 +39,7 @@ void setup() {
 
 	/* set ADC OFFSET0 offset value */
 	/* OFFSET0 - OFFSET7 */
-	AD7173.set_offset_config(OFFSET0, 8388608);
+	AD7173.set_offset_config(OFFSET0, 0);
 
 	/* set the ADC FILTER0 ac_rejection to false and samplingrate to 1007 Hz */
 	/* FILTER0 - FILTER7 */
