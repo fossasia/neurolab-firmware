@@ -120,7 +120,7 @@ typedef enum {
 	GAIN5 = 0x3D,
 	GAIN6 = 0x3E,
 	GAIN7 = 0x3F
-} register_t;
+} adc7173_register_t;
 
 /* ADC analog inputs */
 typedef enum {
@@ -242,7 +242,7 @@ public:
 	@return int - error code
 	=============================================
 	*/
-	int get_current_data_channel(register_t &);
+	int get_current_data_channel(adc7173_register_t &);
 
 	/*
 	================================
@@ -289,7 +289,7 @@ public:
 	@return int - error code
 	=====================================
 	*/
-	int set_channel_config(register_t, bool, register_t, analog_input_t, analog_input_t);
+	int set_channel_config(adc7173_register_t, bool, adc7173_register_t, analog_input_t, analog_input_t);
 
 	/*
 	==================================
@@ -299,7 +299,7 @@ public:
 	@return int - error code
 	==================================
 	*/
-	int set_setup_config(register_t, coding_mode_t);
+	int set_setup_config(adc7173_register_t, coding_mode_t);
 
 	/*
 	==========================================
@@ -309,7 +309,7 @@ public:
 	@return int - error code
 	==========================================
 	*/
-	int set_filter_config(register_t, data_rate_t);
+	int set_filter_config(adc7173_register_t, data_rate_t);
 
 	/*
 	======================================
@@ -319,7 +319,7 @@ public:
 	@return int - error code
 	======================================
 	*/
-	int set_offset_config(register_t, uint32_t);
+	int set_offset_config(adc7173_register_t, uint32_t);
 
 private:
 	/* ADC data mode */
@@ -341,7 +341,7 @@ private:
 	@param int - the length of bytes to set
 	=======================================
 	*/
-	int set_register(register_t, byte *, int);
+	int set_register(adc7173_register_t, byte *, int);
 
 	/*
 	=======================================
@@ -351,7 +351,7 @@ private:
 	@return byte[] - the ADC register value
 	=======================================
 	*/
-	int get_register(register_t, byte *, int);
+	int get_register(adc7173_register_t, byte *, int);
 };
 
 extern AD7173Class AD7173;
