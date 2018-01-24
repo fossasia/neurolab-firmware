@@ -40,7 +40,7 @@ void AD7173Class::print_byte(byte value) {
 	Serial.print(format);
 }
 
-int AD7173Class::set_register(register_t reg, byte *value, int value_len) {
+int AD7173Class::set_register(adc7173_register_t reg, byte *value, int value_len) {
 	/* send communication register id 0x00 */
 	SPI.transfer(0x00);
 	/* send write command to the desired register 0x00 - 0xFF */
@@ -65,7 +65,7 @@ int AD7173Class::set_register(register_t reg, byte *value, int value_len) {
 	return 0;
 }
 
-int AD7173Class::get_register(register_t reg, byte *value, int value_len) {
+int AD7173Class::get_register(adc7173_register_t reg, byte *value, int value_len) {
 	/* send communication register id 0x00 */
 	SPI.transfer(0x00);
 	/* send read command to the desired register 0x00 - 0xFF */
@@ -90,7 +90,7 @@ int AD7173Class::get_register(register_t reg, byte *value, int value_len) {
 	return 0;
 }
 
-int AD7173Class::get_current_data_channel(register_t &channel) {
+int AD7173Class::get_current_data_channel(adc7173_register_t &channel) {
 	/* Address: 0x00, Reset: 0x80, Name: STATUS */
 
 	/* get ADC status register */
@@ -98,7 +98,7 @@ int AD7173Class::get_current_data_channel(register_t &channel) {
 	this->get_register(STATUS_REG, value, 1);
 
 	/* assign to return channel register value */
-	channel = (register_t) (value[0] & 0x0F);
+	channel = (adc7173_register_t) (value[0] & 0x0F);
 
 	/* return error code */
 	return 0;
@@ -199,7 +199,7 @@ bool AD7173Class::is_valid_id() {
 	return valid_id;
 }
 
-int AD7173Class::set_channel_config(register_t channel, bool enable, register_t setup, analog_input_t ain_pos, analog_input_t ain_neg) {
+int AD7173Class::set_channel_config(adc7173_register_t channel, bool enable, adc7173_register_t setup, analog_input_t ain_pos, analog_input_t ain_neg) {
 	/* Address: 0x10, Reset: 0x8001, Name: CH0 */
 	/* Address Range: 0x11 to 0x1F, Reset: 0x0001, Name: CH1 to CH15 */
 
@@ -219,7 +219,7 @@ int AD7173Class::set_channel_config(register_t channel, bool enable, register_t 
 	return 0;
 }
 
-int AD7173Class::set_setup_config(register_t setup, coding_mode_t coding_mode) {
+int AD7173Class::set_setup_config(adc7173_register_t setup, coding_mode_t coding_mode) {
 	/* Address Range: 0x20 to 0x27, Reset: 0x1000, Name: SETUPCON0 to SETUPCON7 */
 
 	/* prepare the configuration value */
@@ -237,7 +237,7 @@ int AD7173Class::set_setup_config(register_t setup, coding_mode_t coding_mode) {
 	return 0;
 }
 
-int AD7173Class::set_filter_config(register_t filter, data_rate_t data_rate) {
+int AD7173Class::set_filter_config(adc7173_register_t filter, data_rate_t data_rate) {
 	/* Address Range: 0x28 to 0x2F, Reset: 0x0000, Name: FILTCON0 to FILTCON7 */
 
 	/* prepare the configuration value */
@@ -255,7 +255,7 @@ int AD7173Class::set_filter_config(register_t filter, data_rate_t data_rate) {
 	return 0;
 }
 
-int AD7173Class::set_offset_config(register_t offset, uint32_t offset_value) {
+int AD7173Class::set_offset_config(adc7173_register_t offset, uint32_t offset_value) {
 	/* Address Range: 0x30 to 0x37, Reset: 0x0000, Name: OFFSET0 to OFFSET7 */
 
 	/* add the default offset value */
