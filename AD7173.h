@@ -260,7 +260,7 @@ public:
 	@return int - error code
 	==================================================
 	*/
-	int set_interface_mode_config(bool);
+	int set_interface_mode_config(bool, bool);
 
 	/*
 	==========================================

@@ -122,13 +122,13 @@ int AD7173Class::set_adc_mode_config(data_mode_t data_mode, clock_mode_t clock_m
 	return 0;
 }
 
-int AD7173Class::set_interface_mode_config(bool continuous_read) {
+int AD7173Class::set_interface_mode_config(bool continuous_read, bool append_status_reg) {
 	/* Address: 0x02, Reset: 0x0000, Name: IFMODE */
 
 	/* prepare the configuration value */
 	/* RESERVED [15:13], ALT_SYNC [12], IOSTRENGTH [11], HIDE_DELAY [10], RESERVED [9], DOUT_RESET [8], CONTREAD [7], DATA_STAT [6], REG_CHECK [5], RESERVED [4], CRC_EN [3:2], RESERVED [1], WL16 [0] */
 	byte value[2] = {0x00, 0x00};
-	value[1] = (continuous_read << 7);
+	value[1] = (continuous_read << 7) | (append_status_reg << 6);
 
 	/* update the configuration value */
 	this->set_register(IFMODE_REG, value, 2);

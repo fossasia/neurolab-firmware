@@ -3,7 +3,6 @@
 example to configure and get data from AD7173 ADC
 =================================================
 */
-#include <SPI.h>
 #include <AD7173.h>
 
 void setup() {
@@ -54,16 +53,17 @@ void setup() {
 	/* INTERNAL_CLOCK, INTERNAL_CLOCK_OUTPUT, EXTERNAL_CLOCK_INPUT, EXTERNAL_CRYSTAL */
 	AD7173.set_adc_mode_config(CONTINUOUS_CONVERSION_MODE, INTERNAL_CLOCK);
 
-	/* enable or disable CONTINUOUS_READ_MODE, to exit use AD7173.reset(); */
-	/* AD7173.reset(); return all registers to default state, so everything has to be setup again */
-	AD7173.set_interface_mode_config(false);
+	/* enable/disable CONTINUOUS_READ_MODE and appending STATUS register to data */
+	/* to exit CONTINUOUS_READ_MODE use AD7173.reset(); */
+	/* AD7173.reset(); returns all registers to default state, so everything has to be setup again */
+	AD7173.set_interface_mode_config(false, true);
 
 	/* wait for ADC */
 	delay(10);
 }
 
-/* ADC conversion data */
-byte data[3];
+/* ADC conversion data and STATUS register */
+byte data[4];
 
 void loop() {
 	/* when ADC conversion is finished */
@@ -75,6 +75,7 @@ void loop() {
 		Serial.print(data[0], HEX);
 		Serial.print(data[1], HEX);
 		Serial.println(data[2], HEX);
+		Serial.println(data[3], HEX);
 		delay(100);
 	}
 }
