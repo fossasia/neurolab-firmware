@@ -320,6 +320,17 @@ public:
 	======================================
 	*/
 	int set_offset_config(adc7173_register_t, uint32_t);
+	
+	
+	/*
+	======================================
+	sets the ADC gain compensation value
+	@param byte - gain register
+	@param uint32_t - gain value
+	@return int - error code
+	======================================
+	*/
+	int set_gain_registers(adc7173_register_t, uint32_t);
 
 private:
 	/* ADC data mode */
