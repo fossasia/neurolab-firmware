@@ -280,8 +280,6 @@ int AD7173Class::set_offset_config(adc7173_register_t offset, uint32_t offset_va
 int AD7173Class::set_gain_registers(adc7173_register_t gain, uint32_t gain_value) {
 	/* Address Range: 0x38 to 0x3F, Reset: 0x5XXXX0 , Name: GAIN0 to GAIN7 */
 
-	/* add the default gain value */
-	gain_value += 5312784;
 	/* prepare the configuration value */
 	byte value[3] = {0x00, 0x00, 0x00};
 	value[0] = gain_value >> 16;
