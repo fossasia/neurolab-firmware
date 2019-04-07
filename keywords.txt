@@ -21,6 +21,7 @@ set_setup_config	KEYWORD2
 set_offset_config	KEYWORD2
 set_filter_config	KEYWORD2
 set_channel_config	KEYWORD2
+set_gain_registers  KEYWORD2
 set_adc_mode_config	KEYWORD2
 get_current_data_channel	KEYWORD2
 set_interface_mode_config	KEYWORD2
