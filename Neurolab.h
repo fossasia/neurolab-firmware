@@ -24,7 +24,6 @@ class Neurolab{
     void startStreaming(void);
     void stopStreaming(void);
 
-
     //  ADS1299 FUNCITONS
     void initialize_adc(void);
     void reset_adc(void);
@@ -38,7 +37,6 @@ class Neurolab{
     void set_adc_filter_config(adc7173_register_t , data_rate_t );
     void set_adc_gain_registers(adc7173_register_t , uint32_t );
 
-
     /* 
       Here you can implement other functions related to Neurolab like
       accelerometer, sdcard, wifi module etc..
@@ -46,7 +44,5 @@ class Neurolab{
     */
     
 };
-
-
 
 #endif
