@@ -27,21 +27,27 @@ TO-DO list
 void Neurolab::updateChannelSettings(void){
   /* ... */
 }
+
 void Neurolab::writeChannelSettings(void){
   /* ... */
 }
+
 void Neurolab::setChannelsToDefault(void){
   /* ... */
 }
+
 void Neurolab::sendChannelData(byte){
   /* ... */
 }
+
 void Neurolab::reportDefaultChannelSettings(void){
   /* ... */
 }
+
 void Neurolab::startStreaming(void){
   /* ... */
 }
+
 void Neurolab::stopStreaming(void){
   /* ... */
 }

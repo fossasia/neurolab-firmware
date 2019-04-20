@@ -23,13 +23,13 @@ public:
     void startStreaming(void);
     void stopStreaming(void);
 
-    /*  ADS1299 FUNCITONS */
+	/*  ADS1299 FUNCITONS */
 	/*
 	============================================
 	initializes the SPI connection with the ADC
 	============================================
 	*/
-    void initialize_adc(void);
+	void initialize_adc(void);
 
 	/*
 	==============================================
@@ -43,7 +43,7 @@ public:
 	cancels the current transaction to resync the ADC
 	==================================================
 	*/
-    void sync_adc(void);
+	void sync_adc(void);
 
 	/*
 	=============================================
@@ -52,7 +52,7 @@ public:
 	@return int - error code
 	=============================================
 	*/
-    void get_current_adc_data_channel(adc7173_register_t &);
+	void get_current_adc_data_channel(adc7173_register_t &);
 
 	/*
 	================================
@@ -61,7 +61,7 @@ public:
 	@return int - error code
 	================================
 	*/
-    void set_adc_mode_config(data_mode_t, clock_mode_t);
+	void set_adc_mode_config(data_mode_t, clock_mode_t);
 
 	/*
 	==================================================
@@ -70,7 +70,7 @@ public:
 	@return int - error code
 	==================================================
 	*/
-    void set_adc_interface_mode_config(bool, bool);
+	void set_adc_interface_mode_config(bool, bool);
 
 	/*
 	==========================================
@@ -78,7 +78,7 @@ public:
 	@return byte[] - the ADC conversion result
 	==========================================
 	*/
-    void get_adc_data(byte *);
+	void get_adc_data(byte *);
 
 	/*
 	=====================================
@@ -91,7 +91,7 @@ public:
 	@return int - error code
 	=====================================
 	*/
-    void set_adc_channel_config(adc7173_register_t, bool, adc7173_register_t, analog_input_t, analog_input_t);
+	void set_adc_channel_config(adc7173_register_t, bool, adc7173_register_t, analog_input_t, analog_input_t);
 
 	/*
 	==================================
@@ -101,7 +101,7 @@ public:
 	@return int - error code
 	==================================
 	*/
-    void set_adc_setup_config(adc7173_register_t, coding_mode_t);
+	void set_adc_setup_config(adc7173_register_t, coding_mode_t);
 
 	/*
 	==========================================
@@ -111,7 +111,7 @@ public:
 	@return int - error code
 	==========================================
 	*/
-    void set_adc_filter_config(adc7173_register_t, data_rate_t);
+	void set_adc_filter_config(adc7173_register_t, data_rate_t);
 
 	/*
 	======================================
@@ -121,13 +121,13 @@ public:
 	@return int - error code
 	======================================
 	*/
-    void set_adc_gain_registers(adc7173_register_t, uint32_t);
+	void set_adc_gain_registers(adc7173_register_t, uint32_t);
 
-    /* 
-      Here you can implement other functions related to Neurolab like
-      accelerometer, sdcard, wifi module etc..
+	/* 
+	Here you can implement other functions related to Neurolab like
+	accelerometer, sdcard, wifi module etc..
 
-    */
+	*/
     
 };
 
