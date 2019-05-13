@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/fossasia/neurolab-firmware.svg?branch=master)](https://travis-ci.org/fossasia/neurolab-firmware)
 [![Gitter](https://badges.gitter.im/fossasia/neurolab.svg)](https://gitter.im/fossasia/neurolab?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-[![Mailing List](https://img.shields.io/badge/Mailing%20List-FOSSASIA-blue.svg)](mailto:pslab-fossasia@googlegroups.com)
+[![Mailing List](https://img.shields.io/badge/Mailing%20List-FOSSASIA-blue.svg)](https://groups.google.com/forum/#!forum/pslab-fossasia)
 [![Twitter Follow](https://img.shields.io/twitter/follow/pslabio.svg?style=social&label=Follow&maxAge=2592000?style=flat-square)](https://twitter.com/pslabio)
 
 We are developing a neuro-device as a headband with integrated electronics. This repository holds the firmware for the Neurolab Hardware. 
