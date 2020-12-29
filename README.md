@@ -31,10 +31,10 @@ A difference to existing projects like OpenBCI is that it will not be necessary 
 
 ## Setup
 
-* 1007 data rate
-* external crystal
-* continuous conversion mode
-* 4 analog inputs, 2 bipolar channels
+* 1007 Data Rate
+* External Crystal
+* Continuous Conversion Mode
+* 4 Analog Inputs, 2 Bipolar Channels
 
 ```c
 AD7173.set_channel_config(CH0, true, SETUP0, AIN8, AIN9);
