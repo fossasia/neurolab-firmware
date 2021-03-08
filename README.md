@@ -11,23 +11,23 @@ We are developing a neuro-device as a headband with integrated electronics. This
 
 ## Buy
 
-* You can get the device in future from the [FOSSASIA Shop](https://fossasia.com).
-* More resellers will be listed on the [PSLab website](https://pslab.io/shop/).
+* Availability of the product in the future will be notified in the [FOSSASIA Shop](https://fossasia.com).
+* In further the reseller will be informed at the [PSLab website](https://pslab.io/shop/).
 
 ## Communication
 
-* The Neurolab [chat channel is on Gitter](https://gitter.im/fossasia/neurolab).
-* Please also join us on the [Mailing List](https://groups.google.com/forum/#!forum/pslab-fossasia).
+* Stuck in the problem Chat with us on [Gitter](https://gitter.im/fossasia/neurolab).
+* Please Also, join us on the [Mailing List](https://groups.google.com/forum/#!forum/pslab-fossasia).
 
 ## Goals of Neurolab
 
-The goal of the Neurolab project is to develop an easy to use open hardware measurement headset device for brain waves that can be plugged into an Android smartphone and a software application and enables us to understand our brains better.
+The goal of Neuro Lab is to develop a hardware & software combination to understand our brain better through android application. The hardware headset measures the electrical signal in the brain and sends the information to the smartphone so that the person can easily access the device.
 
-Our brains communicate through neurotransmitters and their activity emits electricity. The neuroheadset measures that electricity on the skin of the forehead and the software processes the signal so that it can translated into a visual or auditory representation. The data that can be collected can be analysed to identify mental health, stress, relaxation and even diseases like Alzheimer. 
+Our brains communicate through neurotransmitters and their activity emits electricity. The neuroheadset measures thatthe electricity on the skin of the forehead and the software processes the signal so that it can be translated into a visual or auditory representation. The data that can be collected can be analysedanalyzed to identify mental health, stress, relaxation, and even diseases like Alzheimer.
 
-Current devices in the medical industry are usually not accessible by doctors due to their high pricing. They are also complicated to use. The idea of the device is to integrate it into a headband and focus and focus on signals that can be obtained through the frontal lobe.
+Currently, devices used in the medical industry are usually highly-priced and complicated to use by doctors. So the idea of developing the device is to make it easy to use by every as it is structured as a headband it is easy to use by doctors and medical staff and they can easily focus on the signal obtained through the frontal lobe.
 
-A difference to existing projects like OpenBCI is that it will not be necessary to 3D print large headsets. Instead we are focusing on creating a device that collects as much data as possible through the forehead. To achieve this goal we are using high-grade sensors and flexible electronics.
+A difference to existing projects like OpenBCI is that it will not be necessary to 3D print large headsets. Instead, we are focusing on creating a device that collects as much data as possible through the forehead. To achieve this goal we are using high-grade sensors and flexible electronics.
 
 ## Setup
 
